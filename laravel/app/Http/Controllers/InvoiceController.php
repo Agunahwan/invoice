@@ -62,18 +62,30 @@ class InvoiceController extends BaseController
         if ($request->get('per_page')) {
             $perpage = $request->get('per_page');
         }
-        $unit = InvoiceHeader::paginate($perpage);
-        if (isset($request->search)) {
-            $filters = [];
-            foreach ($request->search as $key => $val) {
-                $filter = [$key, 'ILIKE', "%$val%"];
-                array_push($filters, $filter);
-            }
+        $result = [];
+        $totalData = InvoiceHeader::count();
+        $invoices = InvoiceHeader::paginate($perpage);
+        foreach ($invoices as $key => $invoice) {
+            $invoice->id = substr('0000' . $invoice->id, -4);
 
-            $unit = InvoiceHeader::where($filters)->paginate($perpage);
+            array_push($result, $invoice);
         }
+        // if (isset($request->search)) {
+        //     $filters = [];
+        //     foreach ($request->search as $key => $val) {
+        //         $filter = [$key, 'ILIKE', "%$val%"];
+        //         array_push($filters, $filter);
+        //     }
 
-        return response()->json($unit, 200);
+        //     $unit = InvoiceHeader::where($filters)->paginate($perpage);
+        // }
+
+        $response = array(
+            'data' => $result,
+            'recordsFiltered' => count($result),
+            'recordsTotal' => $totalData,
+        );
+        return response()->json($response, 200);
     }
 
     public function save(Request $request)
@@ -126,6 +138,35 @@ class InvoiceController extends BaseController
             );
 
             return response()->json($result, 201);
+        } catch (Exception $ex) {
+            $result = array(
+                'is_success' => false,
+                'error_messsage' => $ex,
+            );
+            return response()->json($result, 500);
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $invoice = InvoiceHeader::find($id);
+
+            DB::transaction(function () use ($invoice) {
+                // Delete all detail data
+                InvoiceDetail::where('invoice_header_id', $invoice->id)->each(function ($detail, $key) {
+                    $detail->delete();
+                });
+
+                $invoice->delete();
+            });
+
+            $result = array(
+                'is_success' => true,
+                'data' => $invoice,
+            );
+
+            return response()->json($result, 200);
         } catch (Exception $ex) {
             $result = array(
                 'is_success' => false,

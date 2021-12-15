@@ -1,4 +1,6 @@
 var masterDataTable = [];
+var tableName = "";
+var totalColumnTable = 0;
 
 async function getData(url) {
   return $.ajax({
@@ -110,7 +112,7 @@ function initGrid(
     processing: true,
     ajax: {
       url: dataUrl,
-      method: "POST",
+      method: "GET",
       dataType: "json",
     },
     dom:
@@ -223,4 +225,49 @@ function generateActionGrid(
   }
 
   return buttons;
+}
+
+function confirmDelete(id, tableId, url, redirectUrl = "") {
+  tableName = tableId;
+  $("#id").val(id);
+  $("#url").val(url);
+  if (redirectUrl !== "") $("#redirectUrl").val(redirectUrl);
+
+  var dialog = $("#dialog-confirmation").modal("show");
+
+  $("#btn-no").click(function () {
+    dialog.modal("hide");
+  });
+}
+
+function onDelete() {
+  var id = $("#id").val();
+  var url = $("#url").val();
+  var title = "Delete Data";
+
+  $("#dialog-confirmation").modal("hide");
+
+  $.ajax({
+    url: url + "/" + id,
+    data: {
+      id: id,
+    },
+    cache: false,
+    type: "DELETE",
+    success: function (data, textStatus, jQxhr) {
+      if (data.is_success) {
+        showMessage(title, "Data berhasil dihapus", true);
+      } else {
+        showMessage(title, "Data gagal dihapus", false);
+      }
+      refreshData(tableName);
+    },
+    error: function (requestObject, error, errorThrown) {
+      showErrorMessage(title, requestObject, errorThrown);
+    },
+  });
+}
+
+function refreshData(tableId) {
+  masterDataTable[tableId].ajax.reload();
 }

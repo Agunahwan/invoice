@@ -219,10 +219,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 id="message-data-title" class="modal-data-title">Title</h4>
                 <button type="button" class="close" onclick="onClose()" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 id="message-data-title" class="modal-data-title">Title</h4>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="redirectUrl" name="redirectUrl" value="" />

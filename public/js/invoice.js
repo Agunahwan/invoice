@@ -6,29 +6,20 @@ $.ajaxSetup({
 
 $(document).ready(function () {
   // Preparing urls
-  var dataUrl = "";
+  var dataUrl = local + "/invoice/data";
   var editUrl = "";
   var detailUrl = "";
-  var deleteUrl = "";
+  var deleteUrl = local + "/invoice";
 
   var columns = [
-    { data: "code", name: "@nameof(Model.Code)", autoWidth: true },
-    { data: "discipline", name: "@nameof(Model.Discipline)", autoWidth: true },
-    {
-      data: "isActive",
-      name: "@nameof(Model.IsActive)",
-      autoWidth: true,
-      render: function (data, type, row, meta) {
-        if (data == 1) {
-          return "Yes";
-        } else {
-          return "No";
-        }
-      },
-    },
+    { data: "id", name: "id", autoWidth: true },
+    { data: "subject", name: "subject", autoWidth: true },
+    { data: "issue_date", name: "issue_date", autoWidth: true },
+    { data: "due_date", name: "due_date", autoWidth: true },
+    { data: "subtotal", name: "subtotal", autoWidth: true },
   ];
 
-  initGrid();
+  initGrid("dataTable", columns, dataUrl, editUrl, detailUrl, deleteUrl);
 });
 
 function addData() {

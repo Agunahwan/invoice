@@ -14,6 +14,7 @@ class InvoiceHeader extends Model
      * @var string
      */
     protected $table = 'invoice_header';
+    protected $primaryKey = 'id';
 
     /**
      * The attributes that are mass assignable.
