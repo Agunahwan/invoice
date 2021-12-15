@@ -10,6 +10,69 @@ async function getData(url) {
   }).then((response) => response.data);
 }
 
+function showMessage(title, message, isSuccess, redirectUrl = "") {
+  $("#message-data-title").html(title);
+  $("#message-data-body").html(message);
+  if (isSuccess) {
+    $("#message-data-label").attr("class", "alert alert-success");
+  } else {
+    $("#message-data-label").attr("class", "alert alert-danger");
+  }
+  if (redirectUrl !== "") {
+    $("#redirectUrl").val(redirectUrl);
+  }
+  $("#modal-message").modal("show");
+}
+
+function showErrorMessage(title, requestObject, errorThrown) {
+  if (
+    requestObject &&
+    requestObject.responseJSON &&
+    requestObject.responseJSON.errorMesssage
+  ) {
+    showMessage(title, requestObject.responseJSON.errorMesssage, false);
+  } else {
+    showMessage(title, errorThrown, false);
+  }
+}
+
+function onClose() {
+  $("#modal-message").modal("hide");
+
+  if ($("#message-data-label").attr("class") === "alert alert-success") {
+    // Redirect to index
+    //window.location.href = $("#redirectUrl").val();
+
+    var destinationUrl = window.location.origin + $("#redirectUrl").val();
+    var currentUrl = window.location.href;
+
+    if (destinationUrl == currentUrl && destinationUrl.indexOf("#") > 0) {
+      window.location.reload();
+    } else {
+      window.location.href = $("#redirectUrl").val();
+    }
+  }
+}
+
+function save(title, url, data, redirectUrl) {
+  $.ajax({
+    url: url,
+    data: data,
+    cache: false,
+    type: "POST",
+    success: function (data, textStatus, jQxhr) {
+      if (data.is_success) {
+        showMessage(title, "Data berhasil disimpan", true, redirectUrl);
+      } else {
+        showMessage(title, data.error_messsage, false);
+      }
+    },
+    error: function (requestObject, error, errorThrown) {
+      showErrorMessage(title, requestObject, errorThrown);
+    },
+  });
+}
+
 function initGrid(
   tableId,
   columns,

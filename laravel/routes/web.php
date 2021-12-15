@@ -24,6 +24,7 @@ $router->get('/', function () {
 $router->group(['prefix' => 'invoice'], function ($router) {
     $router->get('add', [InvoiceController::class, 'create']);
     $router->get('data', [InvoiceController::class, 'data']);
+    $router->post('save', [InvoiceController::class, 'save']);
 });
 
 $router->group(['prefix' => 'client'], function ($router) {

@@ -22,7 +22,8 @@
                     <?php } ?>
 
                     {{ csrf_field() }}
-                    <input type="hidden" id="InvoiceId" name="InvoiceId" value="{{{ $invoice->id or '' }}}" />
+                    <input type="hidden" id="InvoiceId" name="InvoiceId" value="{{ $invoice->id }}" />
+                    <input type="hidden" id="CompanyId" name="CompanyId" value="{{ $companyId }}" />
                     <input type="hidden" id="Tax" name="Tax" value="{{ $tax }}" />
 
                     <div class="form-group row">
@@ -57,6 +58,16 @@
                         </div>
                         <div class="col-sm-4">
                             <input type="date" class="form-control input-large" id="DueDate" name="DueDate" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label for="Subject" class="control-label">Subject</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control input-large" id="Subject" placeholder="Subject"
+                                name="Subject" />
                         </div>
                     </div>
 
@@ -201,6 +212,35 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Popup Message -->
+<div class="modal fade" id="modal-message" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="onClose()" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 id="message-data-title" class="modal-data-title">Title</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="redirectUrl" name="redirectUrl" value="" />
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <div class="alert-success hide" role="alert" id="message-data-label">
+                            <label id="message-data-body">Message</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" onclick="onClose()">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
 @stop
 

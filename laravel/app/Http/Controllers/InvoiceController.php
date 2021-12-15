@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
+use App\Models\InvoiceDetail;
 use App\Models\InvoiceHeader;
 use App\Models\Setting;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends BaseController
 {
@@ -20,7 +24,7 @@ class InvoiceController extends BaseController
         $invoice = new InvoiceHeader();
         $latestInvoice = InvoiceHeader::latest()->get();
         if (count($latestInvoice) > 0) {
-            $invoice->id = $latestInvoice->id + 1;
+            $invoice->id = $latestInvoice[0]->id + 1;
         } else {
             $invoice->id = 1;
         }
@@ -34,12 +38,19 @@ class InvoiceController extends BaseController
             $tax = $setting[0]->value;
         }
 
+        // Get Company Id
+        $company = Company::where('id', 1)->get();
+        if (count($company)) {
+            $companyId = $company[0]->id;
+        }
+
         $data = array(
             'header' => 'Add Invoice',
             'isView' => 0,
             'invoice' => $invoice,
             'formattedId' => $formattedId,
             'tax' => $tax,
+            'companyId' => $companyId,
         );
 
         return view('add_invoice', $data);
@@ -63,5 +74,64 @@ class InvoiceController extends BaseController
         }
 
         return response()->json($unit, 200);
+    }
+
+    public function save(Request $request)
+    {
+        try {
+            // Populate data for Invoice Header
+            $data = new InvoiceHeader();
+            $data->company_id = $request->company_id;
+            $data->client_id = $request->client_id;
+            $data->issue_date = $request->issue_date;
+            $data->due_date = $request->due_date;
+            $data->subject = $request->subject;
+            $data->subtotal = $request->subtotal;
+            $data->tax = $request->tax;
+            $data->total_payments = $request->total_payments;
+            $data->payments = $request->payments;
+            $data->amount_due = $request->amount_due;
+            $data->is_paid = $request->is_paid ? 1 : 0;
+            $data->created_by = 0;
+            $data->updated_by = 0;
+
+            // Populate data for Invoice Detail
+            $details = [];
+            foreach ($request->items as $key => $detailItem) {
+                $detail = new InvoiceDetail();
+                $detail->item_id = $detailItem['item']['id'];
+                $detail->quantity = $detailItem['quantity'];
+                $detail->amount = $detailItem['item']['unit_price'];
+                $detail->created_by = 0;
+                $detail->updated_by = 0;
+
+                array_push($details, $detail);
+            }
+
+            DB::transaction(function () use ($data, $details) {
+                $data->save();
+
+                foreach ($details as $key => $detail) {
+                    /*
+                     * insert new record for invoice detail
+                     */
+                    $detail->invoice_header_id = $data->id;
+                    $detail->save();
+                }
+            });
+
+            $result = array(
+                'is_success' => true,
+                'data' => $data,
+            );
+
+            return response()->json($result, 201);
+        } catch (Exception $ex) {
+            $result = array(
+                'is_success' => false,
+                'error_messsage' => $ex,
+            );
+            return response()->json($result, 500);
+        }
     }
 }

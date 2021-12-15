@@ -126,3 +126,32 @@ function onChangePayment() {
 
   $("#AmountDue").val(amountDue);
 }
+
+function onSave() {
+  var title = "Add Invoice";
+
+  // Preparing Url
+  var redirectUrl = local + "/";
+  var url = local + "/invoice/save";
+  var isPaid = parseInt($("#AmountDue").val()) <= 0 ? true : false;
+
+  // Preparing data
+  var data = {
+    id: $("#InvoiceId").val(),
+    company_id: $("#CompanyId").val(),
+    client_id: $("#InvoiceFor").val(),
+    issue_date: $("#IssueDate").val(),
+    due_date: $("#DueDate").val(),
+    subject: $("#Subject").val(),
+    subtotal: $("#Subtotal").val(),
+    tax: $("#TotalTax").val(),
+    total_payments: $("#TotalPayments").val(),
+    payments: $("#Payments").val(),
+    amount_due: $("#AmountDue").val(),
+    is_paid: isPaid,
+    items: invoiceItems,
+  };
+
+  // Save data
+  save(title, url, data, redirectUrl);
+}
