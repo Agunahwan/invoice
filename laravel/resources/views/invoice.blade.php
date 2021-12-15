@@ -1,49 +1,45 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Invoice')
 
 @section('content_header')
 <h1>Invoice</h1>
 @stop
 
 @section('content')
-<div class="card card-default">
-    <div class="card-body">
-        <div class="row">
-            <!-- left column -->
-            <div class="col-md-12">
-                <!-- general form elements -->
-                <div class="box">
-                    <!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="form-group">
-                            <a class="btn btn-success" onclick="addData()">Add Invoice</a>
-                        </div>
-                        <div class="form-group">
-                            <table id="dataTable" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            Invoice ID
-                                        </th>
-                                        <th>
-                                            Subject
-                                        </th>
-                                        <th>
-                                            Issue Date
-                                        </th>
-                                        <th>
-                                            Due Date
-                                        </th>
-                                        <th>
-                                            SubTotal
-                                        </th>
-                                        <th class="act-column">Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
+<div class="row">
+    <!-- left column -->
+    <div class="col-md-12">
+        <!-- general form elements -->
+        <div class="card card-default">
+            <!-- /.box-header -->
+            <div class="card-body">
+                <div class="form-group">
+                    <a class="btn btn-success" onclick="addData()">Add Invoice</a>
+                </div>
+                <div class="form-group">
+                    <table id="dataTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Invoice ID
+                                </th>
+                                <th>
+                                    Subject
+                                </th>
+                                <th>
+                                    Issue Date
+                                </th>
+                                <th>
+                                    Due Date
+                                </th>
+                                <th>
+                                    SubTotal
+                                </th>
+                                <th class="act-column">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>

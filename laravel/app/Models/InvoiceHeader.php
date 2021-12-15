@@ -29,6 +29,7 @@ class InvoiceHeader extends Model
         'subject',
         'subtotal',
         'tax',
+        'total_payments',
         'payments',
         'amount_due',
         'is_paid',

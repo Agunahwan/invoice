@@ -1,5 +1,15 @@
 var masterDataTable = [];
 
+async function getData(url) {
+  return $.ajax({
+    url: url,
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    cache: false,
+    type: "GET",
+  }).then((response) => response.data);
+}
+
 function initGrid(
   tableId,
   columns,
