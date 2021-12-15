@@ -103,7 +103,7 @@ class InvoiceController extends BaseController
             $data->total_payments = $request->total_payments;
             $data->payments = $request->payments;
             $data->amount_due = $request->amount_due;
-            $data->is_paid = $request->is_paid ? 1 : 0;
+            $data->is_paid = $request->is_paid;
             $data->created_by = 0;
             $data->updated_by = 0;
 
@@ -111,9 +111,9 @@ class InvoiceController extends BaseController
             $details = [];
             foreach ($request->items as $key => $detailItem) {
                 $detail = new InvoiceDetail();
-                $detail->item_id = $detailItem['item']['id'];
+                $detail->item_id = $detailItem['item_id'];
                 $detail->quantity = $detailItem['quantity'];
-                $detail->amount = $detailItem['item']['unit_price'];
+                $detail->amount = $detailItem['unit_price'];
                 $detail->created_by = 0;
                 $detail->updated_by = 0;
 
@@ -138,6 +138,43 @@ class InvoiceController extends BaseController
             );
 
             return response()->json($result, 201);
+        } catch (Exception $ex) {
+            $result = array(
+                'is_success' => false,
+                'error_messsage' => $ex,
+            );
+            return response()->json($result, 500);
+        }
+    }
+
+    public function edit($id)
+    {
+        try {
+            $invoice = InvoiceHeader::find($id);
+            $invoiceDetail = InvoiceDetail::with('item')->where('invoice_header_id', $id)->get();
+            $formattedId = substr('0000' . $invoice->id, -4);
+
+            // Get value of tax
+            $tax = 0;
+            $setting = Setting::where('key', 'TAX')->get();
+            if (count($setting)) {
+                $tax = $setting[0]->value;
+            }
+
+            // Get Company Id
+            $companyId = $invoice->company_id;
+
+            $data = array(
+                'header' => 'Edit Invoice',
+                'isView' => 0,
+                'invoice' => $invoice,
+                'invoice_detail' => $invoiceDetail,
+                'formattedId' => $formattedId,
+                'tax' => $tax,
+                'companyId' => $companyId,
+            );
+            // return json_encode($data);
+            return view('add_invoice', $data);
         } catch (Exception $ex) {
             $result = array(
                 'is_success' => false,

@@ -24,6 +24,8 @@
                     {{ csrf_field() }}
                     <input type="hidden" id="InvoiceId" name="InvoiceId" value="{{ $invoice->id }}" />
                     <input type="hidden" id="CompanyId" name="CompanyId" value="{{ $companyId }}" />
+                    <input type="hidden" id="ClientIdSelected" name="ClientIdSelected"
+                        value="{{ $invoice->client_id }}" />
                     <input type="hidden" id="Tax" name="Tax" value="{{ $tax }}" />
 
                     <div class="form-group row">
@@ -50,14 +52,16 @@
                             <label for="IssueDate" class="control-label">Issue Date</label>
                         </div>
                         <div class="col-sm-4">
-                            <input type="date" class="form-control input-large" id="IssueDate" name="IssueDate" />
+                            <input type="date" class="form-control input-large" id="IssueDate" name="IssueDate"
+                                value="{{ $invoice->issue_date }}" />
                         </div>
 
                         <div class="col-sm-2">
                             <label for="DueDate" class="control-label">Due Date</label>
                         </div>
                         <div class="col-sm-4">
-                            <input type="date" class="form-control input-large" id="DueDate" name="DueDate" />
+                            <input type="date" class="form-control input-large" id="DueDate" name="DueDate"
+                                value="{{ $invoice->due_date }}" />
                         </div>
                     </div>
 
@@ -67,7 +71,7 @@
                         </div>
                         <div class="col-sm-4">
                             <input type="text" class="form-control input-large" id="Subject" placeholder="Subject"
-                                name="Subject" />
+                                name="Subject" value="{{ $invoice->subject }}" />
                         </div>
                     </div>
 
@@ -109,7 +113,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control input-large" id="Subtotal" name="Subtotal"
-                                        placeholder="Subtotal" readonly />
+                                        placeholder="Subtotal" value="{{ $invoice->subtotal }}" readonly />
                                 </div>
                             </div>
 
@@ -119,7 +123,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control input-large" id="TotalTax" name="TotalTax"
-                                        placeholder="Tax ({{ $tax }}%)" readonly />
+                                        placeholder="Tax ({{ $tax }}%)" value="{{ $invoice->tax }}" readonly />
                                 </div>
                             </div>
 
@@ -129,7 +133,8 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control input-large" id="TotalPayments"
-                                        name="TotalPayments" placeholder="Total Payments" readonly />
+                                        name="TotalPayments" placeholder="Total Payments"
+                                        value="{{ $invoice->total_payments }}" readonly />
                                 </div>
                             </div>
 
@@ -140,7 +145,8 @@
                                 <div class="col-sm-4">
                                     <input type="number" min="1" step="any" class="form-control input-large"
                                         id="Payments" name="Payments" placeholder="Payments"
-                                        onchange="onChangePayment()" oninput="onChangePayment()" />
+                                        value="{{ $invoice->payments }}" onchange="onChangePayment()"
+                                        oninput="onChangePayment()" />
                                 </div>
                             </div>
 
@@ -150,7 +156,8 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="number" class="form-control input-large" id="AmountDue"
-                                        name="AmountDue" placeholder="Amount Due" readonly />
+                                        name="AmountDue" placeholder="Amount Due" readonly
+                                        value="{{ $invoice->amount_due }}" />
                                 </div>
                             </div>
 
@@ -252,6 +259,13 @@
 {!! Html::script('public/js/main.js') !!}
 <script>
     var local='{{ URL::to('/') }}';
+    var invoiceId={{ $invoice->id }};
+    @if(isset($invoice_detail))
+    var invoiceItems = @json($invoice_detail);
+    @else
+	var invoiceItems = [];
+	@endif
+    var items = [];
 </script>
 {!! Html::script('public/js/form_invoice.js') !!}
 @stop

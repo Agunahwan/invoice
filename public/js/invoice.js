@@ -7,7 +7,7 @@ $.ajaxSetup({
 $(document).ready(function () {
   // Preparing urls
   var dataUrl = local + "/invoice/data";
-  var editUrl = "";
+  var editUrl = local + "/invoice/edit";
   var detailUrl = "";
   var deleteUrl = local + "/invoice";
 

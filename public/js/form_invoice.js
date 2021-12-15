@@ -1,6 +1,3 @@
-var invoiceItems = [];
-var items = [];
-
 $.ajaxSetup({
   headers: {
     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -11,6 +8,10 @@ $(document).ready(function () {
   // Populate Dropdown
   getListClient();
   getListItem();
+
+  if (invoiceItems.length > 0) {
+    populateGridItems();
+  }
 });
 
 function clearFormItem() {
@@ -35,11 +36,19 @@ function onSaveItem() {
 
   if (selectedItem && parseInt(quantity)) {
     var invoiceItem = items.find((x) => x.id == selectedItem);
-    var item = {
-      item: invoiceItem,
-      quantity: parseInt(quantity),
-    };
+    var amount = quantity * invoiceItem.unit_price;
 
+    var item = {
+      id: 0,
+      invoice_header_id: 0,
+      item_id: invoiceItem.id,
+      quantity: quantity,
+      amount: amount,
+      unit_price: invoiceItem.unit_price,
+      description: invoiceItem.description,
+      item_type: invoiceItem.item_type,
+    };
+    console.log(item);
     invoiceItems.push(item);
     populateGridItems();
 
@@ -57,7 +66,13 @@ async function getListClient() {
   client.find("option").remove();
   client.append($("<option />").val("").text("Pilih Client ..."));
   $.each(data, function () {
-    client.append($("<option />").val(this.id).text(this.name));
+    if (this.id == $("#ClientIdSelected").val()) {
+      client.append(
+        $("<option />").val(this.id).text(this.name).attr("selected", true)
+      );
+    } else {
+      client.append($("<option />").val(this.id).text(this.name));
+    }
   });
 }
 
@@ -88,15 +103,15 @@ function populateGridItems() {
   var totalPayments = 0;
 
   $("#dataItem .list tr").remove();
-
+  console.log("Data:" + JSON.stringify(invoiceItems));
   $.each(invoiceItems, function (index, invoiceItem) {
-    var amount = invoiceItem.quantity * invoiceItem.item.unit_price;
+    var amount = invoiceItem.quantity * invoiceItem.unit_price;
 
     var item = `<tr>
-            <td> ${invoiceItem.item.item_type.type}</td>
-            <td> ${invoiceItem.item.description} </td>
+            <td> ${invoiceItem.item_type.type}</td>
+            <td> ${invoiceItem.description} </td>
             <td> ${invoiceItem.quantity} </td>
-            <td> ${invoiceItem.item.unit_price} </td>
+            <td> ${invoiceItem.unit_price} </td>
             <td> ${amount} </td>
             <td><a class='btn btn-sm btn-danger' onclick='onDeleteItem(${index})'>Delete</a></td>
         </tr>`;
@@ -133,7 +148,7 @@ function onSave() {
   // Preparing Url
   var redirectUrl = local + "/";
   var url = local + "/invoice/save";
-  var isPaid = parseInt($("#AmountDue").val()) <= 0 ? true : false;
+  var isPaid = parseInt($("#AmountDue").val()) <= 0 ? 1 : 0;
 
   // Preparing data
   var data = {

@@ -91,10 +91,9 @@ function initGrid(
   var element = $("#" + tableId);
 
   // Prevent parameters of CRUD urls
-  if (editUrl !== "") {
-    if (new RegExp("[?&]").exec(editUrl)) editUrl += "&";
-    else editUrl += "?";
-  }
+  // if (editUrl !== "") {
+  //   if (new RegExp("[&]").exec(editUrl)) editUrl += "&";
+  // }
   if (detailUrl !== "") {
     if (new RegExp("[?&]").exec(detailUrl)) detailUrl += "&";
     else detailUrl += "?";
@@ -190,7 +189,7 @@ function generateActionGrid(
       buttons +=
         "<a class='btn btn-sm btn-warning' href='" +
         editUrl +
-        "id=" +
+        "/" +
         row.id +
         "'>Edit</a> ";
     if (detailUrl !== "")
