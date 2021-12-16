@@ -91,7 +91,7 @@ class InvoiceController extends BaseController
     public function all()
     {
         $data = [
-            'data' => InvoiceHeader::with('invoiceDetail')->get(),
+            'data' => InvoiceHeader::with('company', 'client', 'invoiceDetail', 'invoiceDetail.item', 'invoiceDetail.item.itemType')->get(),
         ];
 
         return response()->json($data, 200);
@@ -99,7 +99,7 @@ class InvoiceController extends BaseController
 
     public function get($id)
     {
-        $invoice = InvoiceHeader::with('invoiceDetail')->find($id);
+        $invoice = InvoiceHeader::with('company', 'client', 'invoiceDetail', 'invoiceDetail.item', 'invoiceDetail.item.itemType')->find($id);
 
         if ($invoice) {
             $data = [
