@@ -88,6 +88,32 @@ class InvoiceController extends BaseController
         return response()->json($response, 200);
     }
 
+    public function all()
+    {
+        $data = [
+            'data' => InvoiceHeader::with('invoiceDetail')->get(),
+        ];
+
+        return response()->json($data, 200);
+    }
+
+    public function get($id)
+    {
+        $invoice = InvoiceHeader::with('invoiceDetail')->find($id);
+
+        if ($invoice) {
+            $data = [
+                'data' => $invoice,
+            ];
+        } else {
+            $data = [
+                'data' => null,
+                'message' => 'Data not found',
+            ];
+        }
+        return response()->json($data);
+    }
+
     public function save(Request $request)
     {
         try {

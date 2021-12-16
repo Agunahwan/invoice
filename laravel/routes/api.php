@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\InvoiceController;
 use Illuminate\Support\Facades\Route;
+
+/** @var \Illuminate\Support\Facades\Route $router */
 
 /*
 |--------------------------------------------------------------------------
@@ -12,8 +14,14 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+$router->group(['prefix' => 'v1'], function ($router) {
+    $router->get('/', function () {
+        return 'Welcome to API v1';
+    });
+    $router->group(['prefix' => 'invoice'], function ($router) {
+        $router->get('all', [InvoiceController::class, 'all']);
+        $router->get('{id}', [InvoiceController::class, 'get']);
+    });
 });
