@@ -36,19 +36,12 @@ function onSaveItem() {
 
   if (selectedItem && parseInt(quantity)) {
     var invoiceItem = items.find((x) => x.id == selectedItem);
-    var amount = quantity * invoiceItem.unit_price;
 
     var item = {
-      id: 0,
-      invoice_header_id: 0,
-      item_id: invoiceItem.id,
-      quantity: quantity,
-      amount: amount,
-      unit_price: invoiceItem.unit_price,
-      description: invoiceItem.description,
-      item_type: invoiceItem.item_type,
+      item: invoiceItem,
+      quantity: parseInt(quantity),
     };
-    console.log(item);
+
     invoiceItems.push(item);
     populateGridItems();
 
@@ -105,19 +98,31 @@ function populateGridItems() {
   $("#dataItem .list tr").remove();
   console.log("Data:" + JSON.stringify(invoiceItems));
   $.each(invoiceItems, function (index, invoiceItem) {
-    var amount = invoiceItem.quantity * invoiceItem.unit_price;
+    if (invoiceItem.item) {
+      var amount = invoiceItem.quantity * invoiceItem.item.unit_price;
 
-    var item = `<tr>
-            <td> ${invoiceItem.item_type.type}</td>
-            <td> ${invoiceItem.description} </td>
+      if (isView == 1) {
+        var item = `<tr>
+            <td> ${invoiceItem.item.item_type.type}</td>
+            <td> ${invoiceItem.item.description} </td>
             <td> ${invoiceItem.quantity} </td>
-            <td> ${invoiceItem.unit_price} </td>
+            <td> ${invoiceItem.item.unit_price} </td>
+            <td> ${amount} </td>
+        </tr>`;
+      } else {
+        var item = `<tr>
+            <td> ${invoiceItem.item.item_type.type}</td>
+            <td> ${invoiceItem.item.description} </td>
+            <td> ${invoiceItem.quantity} </td>
+            <td> ${invoiceItem.item.unit_price} </td>
             <td> ${amount} </td>
             <td><a class='btn btn-sm btn-danger' onclick='onDeleteItem(${index})'>Delete</a></td>
         </tr>`;
-    $("#dataItem .list").append(item);
+      }
+      $("#dataItem .list").append(item);
 
-    subtotal += amount;
+      subtotal += amount;
+    }
   });
   totalTax = (subtotal * tax) / 100;
   totalPayments = subtotal + totalTax;

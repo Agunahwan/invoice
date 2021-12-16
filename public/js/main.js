@@ -94,10 +94,10 @@ function initGrid(
   // if (editUrl !== "") {
   //   if (new RegExp("[&]").exec(editUrl)) editUrl += "&";
   // }
-  if (detailUrl !== "") {
-    if (new RegExp("[?&]").exec(detailUrl)) detailUrl += "&";
-    else detailUrl += "?";
-  }
+  // if (detailUrl !== "") {
+  //   if (new RegExp("[?&]").exec(detailUrl)) detailUrl += "&";
+  //   else detailUrl += "?";
+  // }
 
   // Set DOM
   var toolbarHtml = "";
@@ -196,9 +196,9 @@ function generateActionGrid(
       buttons +=
         "<a class='btn btn-sm btn-primary' href='" +
         detailUrl +
-        "id=" +
+        "/" +
         row.id +
-        "'>Details</a> ";
+        "'>Detail</a> ";
     if (deleteUrl !== "") {
       if (redirectUrl !== "")
         buttons +=

@@ -118,7 +118,11 @@ class InvoiceController extends BaseController
     {
         try {
             // Populate data for Invoice Header
-            $data = new InvoiceHeader();
+            if ($request->id > 0) {
+                $data = InvoiceHeader::find($request->id);
+            } else {
+                $data = new InvoiceHeader();
+            }
             $data->company_id = $request->company_id;
             $data->client_id = $request->client_id;
             $data->issue_date = $request->issue_date;
@@ -137,9 +141,9 @@ class InvoiceController extends BaseController
             $details = [];
             foreach ($request->items as $key => $detailItem) {
                 $detail = new InvoiceDetail();
-                $detail->item_id = $detailItem['item_id'];
+                $detail->item_id = $detailItem['item']['id'];
                 $detail->quantity = $detailItem['quantity'];
-                $detail->amount = $detailItem['unit_price'];
+                $detail->amount = $detailItem['item']['unit_price'];
                 $detail->created_by = 0;
                 $detail->updated_by = 0;
 
@@ -148,6 +152,8 @@ class InvoiceController extends BaseController
 
             DB::transaction(function () use ($data, $details) {
                 $data->save();
+
+                InvoiceDetail::where('invoice_header_id', $data->id)->delete();
 
                 foreach ($details as $key => $detail) {
                     /*
@@ -177,7 +183,7 @@ class InvoiceController extends BaseController
     {
         try {
             $invoice = InvoiceHeader::find($id);
-            $invoiceDetail = InvoiceDetail::with('item')->where('invoice_header_id', $id)->get();
+            $invoiceDetail = InvoiceDetail::with('item', 'item.itemType')->where('invoice_header_id', $id)->get();
             $formattedId = substr('0000' . $invoice->id, -4);
 
             // Get value of tax
@@ -193,6 +199,43 @@ class InvoiceController extends BaseController
             $data = array(
                 'header' => 'Edit Invoice',
                 'isView' => 0,
+                'invoice' => $invoice,
+                'invoice_detail' => $invoiceDetail,
+                'formattedId' => $formattedId,
+                'tax' => $tax,
+                'companyId' => $companyId,
+            );
+            // return json_encode($data);
+            return view('add_invoice', $data);
+        } catch (Exception $ex) {
+            $result = array(
+                'is_success' => false,
+                'error_messsage' => $ex,
+            );
+            return response()->json($result, 500);
+        }
+    }
+
+    public function detail($id)
+    {
+        try {
+            $invoice = InvoiceHeader::find($id);
+            $invoiceDetail = InvoiceDetail::with('item', 'item.itemType')->where('invoice_header_id', $id)->get();
+            $formattedId = substr('0000' . $invoice->id, -4);
+
+            // Get value of tax
+            $tax = 0;
+            $setting = Setting::where('key', 'TAX')->get();
+            if (count($setting)) {
+                $tax = $setting[0]->value;
+            }
+
+            // Get Company Id
+            $companyId = $invoice->company_id;
+
+            $data = array(
+                'header' => 'Detail Invoice',
+                'isView' => 1,
                 'invoice' => $invoice,
                 'invoice_detail' => $invoiceDetail,
                 'formattedId' => $formattedId,

@@ -3,7 +3,7 @@
 @section('title', 'Add Invoice')
 
 @section('content_header')
-<h1>Add Invoice</h1>
+<h1>{{ $header }}</h1>
 @stop
 
 @section('content')
@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-sm-4">
                             <input type="date" class="form-control input-large" id="IssueDate" name="IssueDate"
-                                value="{{ $invoice->issue_date }}" />
+                                value="{{ $invoice->issue_date }}" {{ $isView==1 ? ' readonly' : '' }} />
                         </div>
 
                         <div class="col-sm-2">
@@ -61,7 +61,7 @@
                         </div>
                         <div class="col-sm-4">
                             <input type="date" class="form-control input-large" id="DueDate" name="DueDate"
-                                value="{{ $invoice->due_date }}" />
+                                value="{{ $invoice->due_date }}" {{ $isView==1 ? ' readonly' : '' }} />
                         </div>
                     </div>
 
@@ -71,7 +71,7 @@
                         </div>
                         <div class="col-sm-4">
                             <input type="text" class="form-control input-large" id="Subject" placeholder="Subject"
-                                name="Subject" value="{{ $invoice->subject }}" />
+                                name="Subject" value="{{ $invoice->subject }}" {{ $isView==1 ? ' readonly' : '' }} />
                         </div>
                     </div>
 
@@ -98,7 +98,9 @@
                                     <th>
                                         Amount
                                     </th>
+                                    @if($isView==0)
                                     <th class="act-column">Action</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody class="list"></tbody>
@@ -146,7 +148,7 @@
                                     <input type="number" min="1" step="any" class="form-control input-large"
                                         id="Payments" name="Payments" placeholder="Payments"
                                         value="{{ $invoice->payments }}" onchange="onChangePayment()"
-                                        oninput="onChangePayment()" />
+                                        oninput="onChangePayment()" {{ $isView==1 ? ' readonly' : '' }} />
                                 </div>
                             </div>
 
@@ -168,7 +170,9 @@
                 <!-- /.card-body -->
 
                 <div class="card-footer">
+                    @if($isView==0)
                     <input type="button" value="Save" class="btn btn-primary" onclick="onSave()" />&nbsp;
+                    @endif
                     <a asp-action="Index">
                         <input type="button" value="Cancel" class="btn btn-default" onclick="onCancel()" />
                     </a>
@@ -266,6 +270,7 @@
 	var invoiceItems = [];
 	@endif
     var items = [];
+    var isView = {{ $isView }};
 </script>
 {!! Html::script('public/js/form_invoice.js') !!}
 @stop

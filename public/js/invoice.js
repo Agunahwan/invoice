@@ -8,7 +8,7 @@ $(document).ready(function () {
   // Preparing urls
   var dataUrl = local + "/invoice/data";
   var editUrl = local + "/invoice/edit";
-  var detailUrl = "";
+  var detailUrl = local + "/invoice/detail";
   var deleteUrl = local + "/invoice";
 
   var columns = [
