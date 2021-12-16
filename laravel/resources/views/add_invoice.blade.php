@@ -75,9 +75,11 @@
                         </div>
                     </div>
 
+                    @if($isView==0)
                     <div class="form-group">
                         <a class="btn btn-success" onclick="addItem()">Add Item</a>
                     </div>
+                    @endif
 
                     <div class="form-group">
                         <table id="dataItem" class="table table-striped">
